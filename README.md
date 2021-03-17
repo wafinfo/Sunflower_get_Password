@@ -21,7 +21,9 @@
 
 ##  使用流程介绍
 
-第一步：读取向日葵配置文件路径，分别提取config.ini参数里面encry_pwd(本机验证码)，fastcode(本机识别码)[注意faskcode值第一个英文字母不要只需要后面数字即可]的值。
+第一步：读取向日葵配置文件路径，分别提取config.ini参数里面encry_pwd(本机验证码)。
+
+fastcode(本机识别码)[注意faskcode值第一个英文字母不要只需要后面数字即可]的值为明文保存所以不需要解密
 
 第二步：把ini参数里面encry_pwd值复制出来本机直接运行SunDecrypt.py输入需要解密encry_pwd值即可输出解密后的值。
 
