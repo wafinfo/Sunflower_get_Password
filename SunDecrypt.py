@@ -1,28 +1,45 @@
 import base64
+import struct
 
 from ConstCode import *
 
-_key = [
-    0x25, 0x5E, 0x24, 0x5E, 0x47, 0x48, 0x73, 0x67, 0x6A, 0x64,
-    0x73, 0x61, 0x64, 0x32, 0x34, 0x64, 0x66, 0x66, 0x67, 0x6A,
-    0x6B, 0x64, 0x68, 0x77, 0x34, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x49, 0xB7, 0xEE, 0x01, 0x00, 0x00,
-    0x3B, 0xBA, 0xB3, 0x8C, 0xFE, 0x7F, 0x00, 0x00, 0x00, 0x00,
-    0x49, 0xB7, 0xEE, 0x01, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00
-]
+
+class KeyBlock:
+    __base = "%^$^GHsgjdsad24dffgjkdhw4"
+
+    __key: bytes = None
+
+    @staticmethod
+    def new_block(sun_login_code: str = ""):
+        if len(sun_login_code) > 31:
+            raise Exception("invalid key")
+        result = KeyBlock()
+        temp = sun_login_code + result.__base
+        size = struct.pack("<I", len(temp))
+        for i in range(56 - len(temp)):
+            temp += "\x00"
+        result.__key = bytes(temp.encode() + size)
+        return result
+
+    def get_result(self) -> bytes:
+        return self.__key
 
 
 class Init(Base):
+    __key: bytes = None
+
+    def __init__(self, key_block: KeyBlock):
+        self.__key = key_block.get_result()
+        super().__init__()
+
     def on_create(self):
         obj = self._get_handle()
         obj.mem_map(self._code_ptr, align(len(init_code)))
         obj.mem_write(self._code_ptr, init_code)
 
         obj.mem_map(self._data_ptr, 0x2000)
-        obj.mem_write(self._data_ptr, bytes(_key))
+        obj.mem_write(self._data_ptr, bytes(self.__key))
         obj.reg_write(unicorn.x86_const.UC_X86_REG_RCX, self._data_ptr)
-
-        obj.reg_write(unicorn.x86_const.UC_X86_REG_RDX, 0x19)
 
     def get_result(self) -> bytes:
         return bytes(self._get_handle().mem_read(self._data_ptr + 60, 0x2000 - 60))
@@ -52,6 +69,8 @@ class Decrypt(Base):
 
     def get_result(self) -> bytes:
         return self._get_handle().mem_read(self.__save_ptr, len(self.__encoded_data))
+
+
 print("""
 
     向日葵encry_pwd(本机验证码)，fastcode(本机识别码)提取
@@ -62,6 +81,10 @@ print("向日葵默认配置文件路径:")
 print("安装版：C:\\Program Files\\Oray\\SunLogin\\SunloginClient\\config.ini")
 print("便携版：C:\\ProgramData\\Oray\\SunloginClient\\config.ini")
 print("本机验证码参数：encry_pwd")
-print("本机识别码参数：fastcode(去掉开头字母)\n")
-print("请输入需要解密的密码:")
-print("解码成功: "+Decrypt(base64.b64decode(input()), Init().start()).start().decode())
+print("本机识别码参数：fastcode(去掉开头字母)")
+print("sunlogincode：判断用户是否登录状态\n")
+print("请判断config.ini配置文件中是否存在sunlogincode参数,存在为登录状态否则未登录\n")
+encry_pwd = input("请输入需要解密的密码:")
+sunlogincode = input("请输入sunlogincode值(没有就按回车键):")
+print("解密成功: "+Decrypt(base64.b64decode(encry_pwd),
+              Init(KeyBlock.new_block(sunlogincode)).start()).start().decode())
