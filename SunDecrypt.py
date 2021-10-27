@@ -71,20 +71,22 @@ class Decrypt(Base):
         return self._get_handle().mem_read(self.__save_ptr, len(self.__encoded_data))
 
 
-print("""
+if __name__ == '__main__':
+    print("""
+    
+        向日葵encry_pwd(本机验证码)，fastcode(本机识别码)提取
+    
+                                                         --WAF
+        """)
+    print("向日葵默认配置文件路径:")
+    print("安装版：C:\\Program Files\\Oray\\SunLogin\\SunloginClient\\config.ini")
+    print("便携版：C:\\ProgramData\\Oray\\SunloginClient\\config.ini")
+    print("本机验证码参数：encry_pwd")
+    print("本机识别码参数：fastcode(去掉开头字母)")
+    print("sunlogincode：判断用户是否登录状态\n")
+    print("请判断config.ini配置文件中是否存在sunlogincode参数,存在为登录状态否则未登录\n")
+    encry_pwd = input("请输入需要解密的密码:")
+    sunlogincode = input("请输入sunlogincode值(没有就按回车键):")
 
-    向日葵encry_pwd(本机验证码)，fastcode(本机识别码)提取
- 
-                                                     --WAF
-    """)
-print("向日葵默认配置文件路径:")
-print("安装版：C:\\Program Files\\Oray\\SunLogin\\SunloginClient\\config.ini")
-print("便携版：C:\\ProgramData\\Oray\\SunloginClient\\config.ini")
-print("本机验证码参数：encry_pwd")
-print("本机识别码参数：fastcode(去掉开头字母)")
-print("sunlogincode：判断用户是否登录状态\n")
-print("请判断config.ini配置文件中是否存在sunlogincode参数,存在为登录状态否则未登录\n")
-encry_pwd = input("请输入需要解密的密码:")
-sunlogincode = input("请输入sunlogincode值(没有就按回车键):")
-print("解密成功: "+Decrypt(base64.b64decode(encry_pwd),
-              Init(KeyBlock.new_block(sunlogincode)).start()).start().decode())
+    print("解密成功: "+Decrypt(base64.b64decode(encry_pwd),
+                  Init(KeyBlock.new_block(sunlogincode)).start()).start().decode())
