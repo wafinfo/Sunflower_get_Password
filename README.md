@@ -38,6 +38,18 @@ fastcode(本机识别码)[注意faskcode值第一个英文字母不要只需要�
 ![2.png](/2.png)
 
 ## 👑 更新记录
+- v2.1 2021/11/1
+
+感谢kid提醒，目前最新版密码已经不在配置文件中但是可以通过注册表进行查询,目前解密脚本仍可以用
+
+   ```bash
+reg query HKEY_USERS\.DEFAULT\Software\Oray\SunLogin\SunloginClient\SunloginInfo
+
+reg query HKEY_USERS\.DEFAULT\Software\Oray\SunLogin\SunloginClient\SunloginGreenInfo
+   ```
+
+![4.png](/4.png)
+
 
 - v2.0 2021/03/17
 
